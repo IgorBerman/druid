@@ -79,9 +79,14 @@ public abstract class AbstractFixedIntervalTask extends AbstractTask
   @Override
   public boolean isReady(TaskActionClient taskActionClient) throws Exception
   {
+    return isReady(taskActionClient, TaskLockType.EXCLUSIVE);
+  }
+
+  protected boolean isReady(TaskActionClient taskActionClient, TaskLockType taskLockType) throws Exception
+  {
     final TaskLock lock = taskActionClient.submit(
         new TimeChunkLockTryAcquireAction(
-            TaskLockType.EXCLUSIVE,
+            taskLockType,
             interval
         )
     );

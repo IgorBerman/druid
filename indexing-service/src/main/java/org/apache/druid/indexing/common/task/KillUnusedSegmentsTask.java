@@ -339,4 +339,10 @@ public class KillUnusedSegmentsTask extends AbstractFixedIntervalTask
     );
     return taskLockMap;
   }
+
+  @Override
+  public boolean isReady(TaskActionClient taskActionClient) throws Exception
+  {
+    return super.isReady(taskActionClient, getContextValue(Tasks.TASK_LOCK_TYPE, Tasks.DEFAULT_TASK_LOCK_TYPE));
+  }
 }
