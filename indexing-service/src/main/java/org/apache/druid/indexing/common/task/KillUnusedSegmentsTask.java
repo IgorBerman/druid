@@ -32,6 +32,7 @@ import org.apache.druid.indexer.TaskStatus;
 import org.apache.druid.indexer.report.KillTaskReport;
 import org.apache.druid.indexer.report.TaskReport;
 import org.apache.druid.indexing.common.TaskLock;
+import org.apache.druid.indexing.common.TaskLockType;
 import org.apache.druid.indexing.common.TaskToolbox;
 import org.apache.druid.indexing.common.actions.MarkSegmentsAsUnusedAction;
 import org.apache.druid.indexing.common.actions.RetrieveUnusedSegmentsAction;
@@ -343,6 +344,9 @@ public class KillUnusedSegmentsTask extends AbstractFixedIntervalTask
   @Override
   public boolean isReady(TaskActionClient taskActionClient) throws Exception
   {
-    return super.isReady(taskActionClient, getContextValue(Tasks.TASK_LOCK_TYPE, Tasks.DEFAULT_TASK_LOCK_TYPE));
+    if (markAsUnused) {
+      return super.isReady(taskActionClient);
+    }
+    return super.isReady(taskActionClient, getContextValue(Tasks.TASK_LOCK_TYPE, TaskLockType.SHARED));
   }
 }
