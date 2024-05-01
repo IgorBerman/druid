@@ -344,9 +344,15 @@ public class KillUnusedSegmentsTask extends AbstractFixedIntervalTask
   @Override
   public boolean isReady(TaskActionClient taskActionClient) throws Exception
   {
-    if (markAsUnused) {
-      return super.isReady(taskActionClient);
-    }
-    return super.isReady(taskActionClient, getContextValue(Tasks.TASK_LOCK_TYPE, TaskLockType.SHARED));
+    final boolean isUsingConcurrentLocks = Boolean.TRUE.equals(
+        getContextValue(
+            Tasks.USE_CONCURRENT_LOCKS,
+            Tasks.DEFAULT_USE_CONCURRENT_LOCKS
+        )
+    );
+
+    TaskLockType defaultLockType = !markAsUnused && isUsingConcurrentLocks ? TaskLockType.REPLACE : TaskLockType.EXCLUSIVE;
+
+    return super.isReady(taskActionClient, getContextValue(Tasks.TASK_LOCK_TYPE, defaultLockType));
   }
 }
