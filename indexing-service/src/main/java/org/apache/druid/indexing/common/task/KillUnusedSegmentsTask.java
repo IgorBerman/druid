@@ -360,6 +360,11 @@ public class KillUnusedSegmentsTask extends AbstractFixedIntervalTask
 
     TaskLockType defaultLockType = !markAsUnused && isUsingConcurrentLocks ? TaskLockType.REPLACE : TaskLockType.EXCLUSIVE;
 
-    return super.isReady(taskActionClient, getContextValue(Tasks.TASK_LOCK_TYPE, defaultLockType));
+    TaskLockType actualLockType = getContextValue(Tasks.TASK_LOCK_TYPE, defaultLockType);
+
+    if (markAsUnused && actualLockType != TaskLockType.EXCLUSIVE) {
+      throw new IllegalArgumentException("It's not safe to use other than " + TaskLockType.EXCLUSIVE.name() + " lock with markAsUnused on ");
+    }
+    return super.isReady(taskActionClient, actualLockType);
   }
 }
