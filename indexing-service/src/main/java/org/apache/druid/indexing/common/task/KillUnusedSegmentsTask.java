@@ -351,7 +351,7 @@ public class KillUnusedSegmentsTask extends AbstractFixedIntervalTask
   @Override
   public boolean isReady(TaskActionClient taskActionClient) throws Exception
   {
-    final boolean isUsingConcurrentLocks = Boolean.TRUE.equals(
+    final boolean useConcurrentLocks = Boolean.TRUE.equals(
         getContextValue(
             Tasks.USE_CONCURRENT_LOCKS,
             Tasks.DEFAULT_USE_CONCURRENT_LOCKS
