@@ -137,7 +137,6 @@ public class KillUnusedSegmentsTaskTest extends IngestionTestBase
     final KillUnusedSegmentsTask task = new KillUnusedSegmentsTaskBuilder()
         .dataSource(DATA_SOURCE)
         .interval(Intervals.of("2019-03-01/2019-04-01"))
-        .markAsUnused(true)
         .build();
 
     Assert.assertEquals(TaskState.SUCCESS, taskRunner.run(task).get().getStatusCode());
@@ -419,7 +418,6 @@ public class KillUnusedSegmentsTaskTest extends IngestionTestBase
     final KillUnusedSegmentsTask task = new KillUnusedSegmentsTaskBuilder()
         .dataSource(DATA_SOURCE)
         .interval(Intervals.of("2019-03-01/2019-04-01"))
-        .markAsUnused(true)
         .build();
     Assert.assertTrue(task.getInputSourceResources().isEmpty());
   }
@@ -430,7 +428,6 @@ public class KillUnusedSegmentsTaskTest extends IngestionTestBase
     final KillUnusedSegmentsTask task = new KillUnusedSegmentsTaskBuilder()
         .dataSource(DATA_SOURCE)
         .interval(Intervals.of("2019-03-01/2019-04-01"))
-        .markAsUnused(true)
         .build();
     Assert.assertEquals(LookupLoadingSpec.Mode.NONE, task.getLookupLoadingSpec().getMode());
   }
@@ -864,7 +861,6 @@ public class KillUnusedSegmentsTaskTest extends IngestionTestBase
     final KillUnusedSegmentsTask task = new KillUnusedSegmentsTaskBuilder()
         .dataSource(DATA_SOURCE)
         .interval(Intervals.of("2018-01-01/2020-01-01"))
-        .markAsUnused(true)
         .batchSize(3)
         .build();
 
@@ -990,45 +986,6 @@ public class KillUnusedSegmentsTaskTest extends IngestionTestBase
   }
 
   @Test
-  public void testInvalidLimitWithMarkAsUnused()
-  {
-    MatcherAssert.assertThat(
-        Assert.assertThrows(
-            DruidException.class,
-            () -> new KillUnusedSegmentsTaskBuilder()
-                .dataSource(DATA_SOURCE)
-                .interval(Intervals.of("2018-01-01/2020-01-01"))
-                .markAsUnused(true)
-                .batchSize(10)
-                .limit(10)
-                .build()
-        ),
-        DruidExceptionMatcher.invalidInput().expectMessageIs(
-            "limit[10] cannot be provided when markAsUnused is enabled."
-        )
-    );
-  }
-
-  @Test
-  public void testInvalidVersionsWithMarkAsUnused()
-  {
-    MatcherAssert.assertThat(
-        Assert.assertThrows(
-            DruidException.class,
-            () -> new KillUnusedSegmentsTaskBuilder()
-                .dataSource(DATA_SOURCE)
-                .interval(Intervals.of("2018-01-01/2020-01-01"))
-                .markAsUnused(true)
-                .versions(ImmutableList.of("foo"))
-                .build()
-        ),
-        DruidExceptionMatcher.invalidInput().expectMessageIs(
-            "versions[[foo]] cannot be provided when markAsUnused is enabled."
-        )
-    );
-  }
-
-  @Test
   public void testGetNumTotalBatchesWithBatchSizeSmallerThanLimit()
   {
     final KillUnusedSegmentsTask task = new KillUnusedSegmentsTaskBuilder()
@@ -1066,7 +1023,6 @@ public class KillUnusedSegmentsTaskTest extends IngestionTestBase
     private Interval interval;
     private List<String> versions;
     private Map<String, Object> context;
-    private Boolean markAsUnused;
     private Integer batchSize;
     private Integer limit;
     private DateTime maxUsedStatusLastUpdatedTime;
@@ -1101,12 +1057,6 @@ public class KillUnusedSegmentsTaskTest extends IngestionTestBase
       return this;
     }
 
-    public KillUnusedSegmentsTaskBuilder markAsUnused(Boolean markAsUnused)
-    {
-      this.markAsUnused = markAsUnused;
-      return this;
-    }
-
     public KillUnusedSegmentsTaskBuilder batchSize(Integer batchSize)
     {
       this.batchSize = batchSize;
@@ -1133,7 +1083,6 @@ public class KillUnusedSegmentsTaskTest extends IngestionTestBase
           interval,
           versions,
           context,
-          markAsUnused,
           batchSize,
           limit,
           maxUsedStatusLastUpdatedTime
