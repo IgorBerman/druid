@@ -998,8 +998,7 @@ public class KillUnusedSegmentsTaskTest extends IngestionTestBase
     Capture<TimeChunkLockTryAcquireAction> acquireActionCapture = Capture.newInstance();
 
     TaskActionClient taskActionClient = EasyMock.createMock(TaskActionClient.class);
-    EasyMock.expect(taskActionClient.submit(EasyMock.capture(acquireActionCapture)))
-            .andReturn(
+    EasyMock.expect(taskActionClient.submit(EasyMock.capture(acquireActionCapture))).andReturn(
                 new SegmentLock(
                     TaskLockType.EXCLUSIVE,
                     "groupId",
@@ -1009,7 +1008,7 @@ public class KillUnusedSegmentsTaskTest extends IngestionTestBase
                     0,
                     0
                 )
-            );
+    );
     EasyMock.replay(taskActionClient);
 
     Assert.assertTrue(task.isReady(taskActionClient));
@@ -1040,7 +1039,7 @@ public class KillUnusedSegmentsTaskTest extends IngestionTestBase
                     0,
                     0
                 )
-            );
+      );
     EasyMock.replay(taskActionClient);
 
     Assert.assertTrue(task.isReady(taskActionClient));
